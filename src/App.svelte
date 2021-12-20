@@ -4,21 +4,22 @@
 
   import * as vocab from "./N5-Vocab.json";
 
+  //CONSTANTS
+  const vocabList = Object.entries(vocab).filter((a) => a[0] != "default");
+
+  //MODIFIABLES
+  let numberOfCards = 5;
+
+  //INIT STATE
   let showScore = false;
   let score = 0;
-
-  let numberOfCards = 5;
   let hiraWords = [];
   let hiraAnswers = [];
-  let vocabList = Object.entries(vocab).filter((a) => a[0] != "default");
   let currentCard = 0;
-  let rightAnswer;
+  let rightAnswer = undefined;
   let showAnswer = false;
 
-  const handleClick = () => {
-    hiraWords = [];
-    hiraAnswers = [];
-    showAnswer = false;
+  const initWords = () => {
     while (hiraWords.length < numberOfCards) {
       let randomItem =
         Object.entries(vocabList)[
@@ -29,6 +30,24 @@
         hiraAnswers.push(randomItem[0]);
       }
     }
+  };
+
+  const startGame = () => {
+    hiraWords = [];
+    hiraAnswers = [];
+    showAnswer = false;
+    initWords();
+  };
+
+  const restartGame = () => {
+    showScore = false;
+    score = 0;
+    hiraWords = [];
+    hiraAnswers = [];
+    currentCard = 0;
+    rightAnswer = undefined;
+    showAnswer = false;
+    initWords();
   };
 
   const checkAnswer = (answer) => {
@@ -55,7 +74,7 @@
   <div class="gameContainer">
     <div class="card">
       {#if hiraWords.length == 0}
-        <button on:click={handleClick}>
+        <button on:click={startGame}>
           <h1>Comenzar!</h1>
         </button>
       {:else if showScore}
@@ -79,9 +98,8 @@
         >
       {/if}
       {#if showScore}
-        <button
-          class="playAgainButton"
-          on:click={() => console.log("play again")}>Play Again</button
+        <button class="playAgainButton" on:click={restartGame}
+          >Play Again</button
         >
       {/if}
     </div>
@@ -170,7 +188,7 @@
     font-weight: bold;
     padding: 10px;
   }
-  .showAnswerButton:hover {
+  .playAgainButton:hover {
     cursor: pointer;
   }
 </style>
