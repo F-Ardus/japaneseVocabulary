@@ -1,16 +1,43 @@
 <script>
-  import { debug } from "svelte/internal";
   import AnswerInput from "./AnswerInput.svelte";
 
   import * as vocab from "./N5-Vocab.json";
 
   //CONSTANTS
-  const vocabList = Object.entries(vocab).filter((a) => a[0] != "default");
+  const generateFullVocabList = () => {
+    let dict = {};
+    for (let index = 0; index < Object.entries(vocab.default).length; index++) {
+      dict["s" + (index + 1)] = Object.entries(vocab.default)[index][1];
+    }
+    return dict;
+  };
+  const fullVocabList = generateFullVocabList();
+  const generateAllVocab = () => {
+    let res = [];
+    for (
+      let index = 1;
+      index <= Object.entries(fullVocabList).length;
+      index++
+    ) {
+      res = res.concat(fullVocabList["s" + index]);
+    }
+    return res;
+  };
+  const allVocab = generateAllVocab();
 
   //MODIFIABLES
   let numberOfCards = 5;
+  let selectedList = "s1";
+  const getVocabList = () => {
+    if (selectedList == "all") {
+      return allVocab;
+    } else {
+      return fullVocabList[selectedList];
+    }
+  };
 
   //INIT STATE
+  let vocabList = getVocabList();
   let showScore = false;
   let score = 0;
   let hiraWords = [];
@@ -22,9 +49,7 @@
   const initWords = () => {
     while (hiraWords.length < numberOfCards) {
       let randomItem =
-        Object.entries(vocabList)[
-          Math.floor(Math.random() * (Object.entries(vocabList).length - 0)) + 0
-        ][1];
+        vocabList[Math.floor(Math.random() * (vocabList.length - 0)) + 0];
       if (!(hiraWords.findIndex((a) => a == randomItem[1]) != -1)) {
         hiraWords.push(randomItem[1]);
         hiraAnswers.push(randomItem[0]);
@@ -32,14 +57,8 @@
     }
   };
 
-  const startGame = () => {
-    hiraWords = [];
-    hiraAnswers = [];
-    showAnswer = false;
-    initWords();
-  };
-
   const restartGame = () => {
+    vocabList = getVocabList();
     showScore = false;
     score = 0;
     hiraWords = [];
@@ -51,7 +70,10 @@
   };
 
   const checkAnswer = (answer) => {
-    if (hiraWords[currentCard] == vocab[answer.detail.toLowerCase()]) {
+    let correspondToAnswer = vocabList.find(
+      (i) => i[0] === answer.detail.toLowerCase()
+    )?.[1];
+    if (hiraWords[currentCard] == correspondToAnswer) {
       rightAnswer = true;
       score++;
       nextCard();
@@ -72,9 +94,22 @@
 
 <main>
   <div class="gameContainer">
+    <select
+      bind:value={selectedList}
+      on:change={restartGame}
+      class="vocabSelector"
+    >
+      {#each Object.entries(fullVocabList) as list}
+        <option value={list[0]}
+          >{"Set - " + list[0].charAt(list[0].length - 1)}</option
+        >
+      {/each}
+      <option value={"all"}>Todos</option>
+    </select>
+
     <div class="card">
       {#if hiraWords.length == 0}
-        <button on:click={startGame}>
+        <button on:click={restartGame}>
           <h1>Comenzar!</h1>
         </button>
       {:else if showScore}
@@ -122,6 +157,12 @@
     padding: 0;
     max-height: 100%;
     max-width: 100%;
+  }
+  .vocabSelector {
+    background-color: white;
+    width: 100px;
+    margin-bottom: 40px;
+    border-radius: 5px;
   }
   .gameContainer {
     margin: auto;
