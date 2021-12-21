@@ -75,6 +75,7 @@
     )?.[1];
     if (hiraWords[currentCard] == correspondToAnswer) {
       rightAnswer = true;
+      showAnswer = false;
       score++;
       nextCard();
     } else {
@@ -101,7 +102,7 @@
     >
       {#each Object.entries(fullVocabList) as list}
         <option value={list[0]}
-          >{"Set - " + list[0].charAt(list[0].length - 1)}</option
+          >{"N5 Set - " + list[0].charAt(list[0].length - 1)}</option
         >
       {/each}
       <option value={"all"}>Todos</option>
@@ -128,8 +129,12 @@
 
       {#if hiraWords.length > 0 && !showScore}
         <AnswerInput on:checkAnswer={checkAnswer} />
-        <button class="showAnswerButton" on:click={() => (showAnswer = true)}
-          >Show Answer</button
+        <button
+          class="showAnswerButton"
+          on:click={() => {
+            showAnswer = true;
+            score--;
+          }}>Show Answer</button
         >
       {/if}
       {#if showScore}
@@ -144,6 +149,7 @@
       <button
         on:click={() => {
           showAnswer = false;
+          score++;
           nextCard();
         }}>Next</button
       >
@@ -160,7 +166,7 @@
   }
   .vocabSelector {
     background-color: white;
-    width: 100px;
+    width: 150px;
     margin-bottom: 40px;
     border-radius: 5px;
   }
