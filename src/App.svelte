@@ -1,4 +1,6 @@
 <script>
+  import { debug } from "svelte/internal";
+
   import AnswerInput from "./AnswerInput.svelte";
 
   import * as vocab from "./N5-Vocab.json";
@@ -44,12 +46,18 @@
     } else {
       maxCards = numberOfCards;
     }
+    var newVocabList = [...vocabList];
     while (hiraWords.length < maxCards) {
-      let randomItem =
-        vocabList[Math.floor(Math.random() * (vocabList.length - 0)) + 0];
-      if (!(hiraWords.findIndex((a) => a == randomItem[1]) != -1)) {
+      let index = Math.floor(Math.random() * (newVocabList.length - 0)) + 0;
+      let randomItem = newVocabList.splice(index, 1)[0];
+      if (
+        hiraWords.findIndex((a) => a == randomItem[1]) == -1 ||
+        hiraAnswers.findIndex((a) => a == randomItem[0]) == -1
+      ) {
         hiraWords.push(randomItem[1]);
         hiraAnswers.push(randomItem[0]);
+      } else {
+        console.log(randomItem[0] + " ESTA REPETIDO");
       }
     }
   };
@@ -200,85 +208,92 @@
   </div>
 </main>
 
-<style>
+<style lang="scss">
   main {
     margin: 0;
     padding: 0;
     max-height: 100%;
     max-width: 100%;
-  }
-  .vocabSelector {
-    background-color: white;
-    width: 150px;
-    margin-bottom: 40px;
-    border-radius: 5px;
-  }
-  .gameContainer {
-    margin: auto;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  .card {
-    height: 350px;
-    width: 350px;
-    border-radius: 20px;
-    border: 1px solid #cfcfcf;
-    display: flex;
-    justify-content: center;
-    box-shadow: 0px 0px 20px 0px #cfcfcf;
-    align-items: center;
-  }
-  .card button {
-    height: 100%;
-    width: 100%;
-    border-radius: 20px;
-    background-color: white;
-    border: none;
-    margin: 0;
-  }
-  .card button:hover {
-    font-size: 21px;
-    cursor: pointer;
-  }
-  .answerSection {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .answerSection h2 {
-    margin: 0;
-    margin-top: 40px;
-  }
-  .correctAnswer {
-    color: limegreen;
-  }
-  .wrongAnswer {
-    color: crimson;
-  }
-  .showAnswerButton {
-    color: white;
-    background-color: crimson;
-    border-radius: 5px;
-    border: none;
-    font-weight: bold;
-    padding: 10px;
-  }
-  .showAnswerButton:hover {
-    cursor: pointer;
-  }
-  .playAgainButton {
-    margin-top: 40px;
-    color: white;
-    background-color: limegreen;
-    border-radius: 5px;
-    border: none;
-    font-weight: bold;
-    padding: 10px;
-  }
-  .playAgainButton:hover {
-    cursor: pointer;
+
+    .vocabSelector {
+      background-color: white;
+      width: 150px;
+      margin-bottom: 40px;
+      border-radius: 5px;
+    }
+    .gameContainer {
+      margin: auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .card {
+        height: 350px;
+        width: 350px;
+        border-radius: 20px;
+        border: 1px solid #cfcfcf;
+        display: flex;
+        justify-content: center;
+        box-shadow: 0px 0px 20px 0px #cfcfcf;
+        align-items: center;
+
+        button {
+          height: 100%;
+          width: 100%;
+          border-radius: 20px;
+          background-color: white;
+          border: none;
+          margin: 0;
+
+          &:hover {
+            font-size: 21px;
+            cursor: pointer;
+          }
+        }
+      }
+      .answerSection {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        h2 {
+          margin: 0;
+          margin-top: 40px;
+        }
+      }
+      .correctAnswer {
+        color: limegreen;
+      }
+      .wrongAnswer {
+        color: crimson;
+      }
+      .showAnswerButton {
+        color: white;
+        background-color: crimson;
+        border-radius: 5px;
+        border: none;
+        font-weight: bold;
+        padding: 10px;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+      .playAgainButton {
+        margin-top: 40px;
+        color: white;
+        background-color: limegreen;
+        border-radius: 5px;
+        border: none;
+        font-weight: bold;
+        padding: 10px;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
   }
 </style>
