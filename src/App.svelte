@@ -35,31 +35,43 @@
     }
   };
 
-  const initWords = () => {
-    let maxCards;
+  const getMaxCards = () => {
     if (numberOfCards == "nonstop") {
-      maxCards = vocabList.length;
+      return vocabList.length;
     } else if (numberOfCards > vocabList.length) {
       let numberList = getNumbersList(vocabList);
       numberOfCards = numberList[numberList.length - 1];
-      maxCards = numberOfCards;
-    } else {
-      maxCards = numberOfCards;
+    }
+    return numberOfCards;
+  };
+
+  const initWords = () => {
+    let maxCards = getMaxCards();
+    if (gameType == "showLang") {
+      indexA = 0;
+      indexB = 1;
     }
     var newVocabList = [...vocabList];
     while (hiraWords.length < maxCards) {
       let index = Math.floor(Math.random() * (newVocabList.length - 0)) + 0;
       let randomItem = newVocabList.splice(index, 1)[0];
       if (
-        hiraWords.findIndex((a) => a == randomItem[1]) == -1 ||
-        hiraAnswers.findIndex((a) => a == randomItem[0]) == -1
+        hiraWords.findIndex((a) => a == randomItem[indexA]) == -1 ||
+        hiraAnswers.findIndex((a) => a == randomItem[indexB]) == -1
       ) {
-        hiraWords.push(randomItem[1]);
-        hiraAnswers.push(randomItem[0]);
+        hiraWords.push(randomItem[indexA]);
+        hiraAnswers.push(randomItem[indexB]);
+        if (gameType == "showShuffle") {
+          let extra = indexA;
+          indexA = indexB;
+          indexB = extra;
+        }
       } else {
         console.log(randomItem[0] + " ESTA REPETIDO");
       }
     }
+    indexA = 1;
+    indexB = 0;
   };
 
   const restartGame = () => {
@@ -71,25 +83,37 @@
     currentCard = 0;
     rightAnswer = undefined;
     showAnswer = false;
+    indexA = 1;
+    indexB = 0;
     initWords();
   };
 
   const checkAnswer = (answer) => {
+    if (gameType == "showLang") {
+      indexA = 0;
+      indexB = 1;
+    }
+    debugger;
     let correspondToAnswer = vocabList.find(
-      (i) => i[0] === answer.detail.toLowerCase()
-    )?.[1];
+      (i) => i[indexB] === answer.detail.toLowerCase()
+    )?.[indexA];
     if (hiraWords[currentCard] == correspondToAnswer) {
       rightAnswer = true;
       showAnswer = false;
       score++;
       nextCard();
+      if (gameType == "showShuffle") {
+        let extra = indexA;
+        indexA = indexB;
+        indexB = extra;
+      }
     } else {
       rightAnswer = false;
     }
   };
 
   const nextCard = () => {
-    let maxCards = vocabList.length;
+    let maxCards = getMaxCards();
     if (currentCard + 1 == maxCards) {
       if (numberOfCards == "nonstop") {
         restartGame();
@@ -116,6 +140,7 @@
   //MODIFIABLES
   let numberOfCards = 5;
   let selectedList = "s1";
+  let gameType = "showHira";
 
   //INIT STATE
   let vocabList = getVocabList();
@@ -126,37 +151,60 @@
   let currentCard = 0;
   let rightAnswer = undefined;
   let showAnswer = false;
+  let indexA = 1;
+  let indexB = 0;
 </script>
 
 <main>
   <div class="gameContainer">
-    <div>
-      <select
-        bind:value={selectedList}
-        on:change={restartGame}
-        class="vocabSelector"
-      >
-        {#each Object.entries(fullVocabList) as list}
-          <option value={list[0]}>{"N5 Set - " + list[0]}</option>
-        {/each}
-        <option value={"all"}>Todos</option>
-      </select>
+    <div class="selectorsWrapper">
+      <div class="selectorContainer">
+        <label for="vocabListSelec">Set de tarjetas:</label>
+        <select
+          id="vocabListSelec"
+          bind:value={selectedList}
+          on:change={restartGame}
+          class="vocabSelector"
+        >
+          {#each Object.entries(fullVocabList) as list}
+            <option value={list[0]}>{"N5 Set - " + list[0]}</option>
+          {/each}
+          <option value={"all"}>Todos</option>
+        </select>
+      </div>
 
-      <select
-        bind:value={numberOfCards}
-        on:change={restartGame}
-        class="vocabSelector"
-      >
-        {#each getNumbersList(vocabList) as amount}
-          <option value={amount}>{amount}</option>
-        {/each}
-        {#if vocabList.length % 5 != 0}
-          <option value={vocabList.length}
-            >{"All (" + vocabList.length + ")"}</option
-          >
-        {/if}
-        <option value={"nonstop"}>Non Stop</option>
-      </select>
+      <div>
+        <label for="numCardSelec">Numero de tarjetas:</label>
+        <select
+          id="numCardSelec"
+          bind:value={numberOfCards}
+          on:change={restartGame}
+          class="vocabSelector"
+        >
+          {#each getNumbersList(vocabList) as amount}
+            <option value={amount}>{amount}</option>
+          {/each}
+          {#if vocabList.length % 5 != 0}
+            <option value={vocabList.length}
+              >{"All (" + vocabList.length + ")"}</option
+            >
+          {/if}
+          <option value={"nonstop"}>Non Stop</option>
+        </select>
+      </div>
+      <div>
+        <label for="gameTypeSelec">Tipo de juego:</label>
+        <select
+          id="nameTypeSelec"
+          bind:value={gameType}
+          on:change={restartGame}
+          class="vocabSelector"
+        >
+          <option value={"showLang"}>Español</option>
+          <option value={"showHira"}>Japones</option>
+          <option value={"showShuffle"}>Shuffle</option>
+        </select>
+      </div>
     </div>
 
     <div class="card">
@@ -212,15 +260,29 @@
   main {
     margin: 0;
     padding: 0;
+    width: 500px;
     max-height: 100%;
     max-width: 100%;
 
-    .vocabSelector {
-      background-color: white;
-      width: 150px;
-      margin-bottom: 40px;
-      border-radius: 5px;
+    .selectorsWrapper {
+      display: flex;
+      justify-content: space-evenly;
+      width: 100%;
+
+      label {
+        margin-bottom: 10px;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      .vocabSelector {
+        background-color: white;
+        width: 150px;
+        margin-bottom: 40px;
+        border-radius: 5px;
+      }
     }
+
     .gameContainer {
       margin: auto;
       height: 100%;
