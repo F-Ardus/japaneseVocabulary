@@ -3,15 +3,16 @@
 
   import * as vocab from "./N5-Vocab.json";
 
-  //CONSTANTS
+  //FUNCTIONS
   const generateFullVocabList = () => {
     let dict = {};
+    let allLists = Object.entries(vocab.default);
     for (let index = 0; index < Object.entries(vocab.default).length; index++) {
-      dict["s" + (index + 1)] = Object.entries(vocab.default)[index][1];
+      dict["s" + (index + 1)] = allLists.sort()[index][1];
     }
     return dict;
   };
-  const fullVocabList = generateFullVocabList();
+
   const generateAllVocab = () => {
     let res = [];
     for (
@@ -23,11 +24,7 @@
     }
     return res;
   };
-  const allVocab = generateAllVocab();
 
-  //MODIFIABLES
-  let numberOfCards = 5;
-  let selectedList = "s1";
   const getVocabList = () => {
     if (selectedList == "all") {
       return allVocab;
@@ -36,18 +33,18 @@
     }
   };
 
-  //INIT STATE
-  let vocabList = getVocabList();
-  let showScore = false;
-  let score = 0;
-  let hiraWords = [];
-  let hiraAnswers = [];
-  let currentCard = 0;
-  let rightAnswer = undefined;
-  let showAnswer = false;
-
   const initWords = () => {
-    while (hiraWords.length < numberOfCards) {
+    let maxCards;
+    if (numberOfCards == "nonstop") {
+      maxCards = vocabList.length;
+    } else if (numberOfCards > vocabList.length) {
+      let numberList = getNumbersList(vocabList);
+      numberOfCards = numberList[numberList.length - 1];
+      maxCards = numberOfCards;
+    } else {
+      maxCards = numberOfCards;
+    }
+    while (hiraWords.length < maxCards) {
       let randomItem =
         vocabList[Math.floor(Math.random() * (vocabList.length - 0)) + 0];
       if (!(hiraWords.findIndex((a) => a == randomItem[1]) != -1)) {
@@ -84,29 +81,75 @@
   };
 
   const nextCard = () => {
-    if (currentCard + 1 == numberOfCards) {
-      showScore = true;
+    let maxCards = vocabList.length;
+    if (currentCard + 1 == maxCards) {
+      if (numberOfCards == "nonstop") {
+        restartGame();
+      } else {
+        showScore = true;
+      }
     } else {
       currentCard++;
     }
-    console.log(currentCard + " - " + numberOfCards);
   };
+
+  const getNumbersList = (list) => {
+    let posibleNumbers = [];
+    for (let index = 4; index < list.length; index += 5) {
+      posibleNumbers.push(index + 1);
+    }
+    return posibleNumbers;
+  };
+
+  //CONSTANTS
+  const fullVocabList = generateFullVocabList();
+  const allVocab = generateAllVocab();
+
+  //MODIFIABLES
+  let numberOfCards = 5;
+  let selectedList = "s1";
+
+  //INIT STATE
+  let vocabList = getVocabList();
+  let showScore = false;
+  let score = 0;
+  let hiraWords = [];
+  let hiraAnswers = [];
+  let currentCard = 0;
+  let rightAnswer = undefined;
+  let showAnswer = false;
 </script>
 
 <main>
   <div class="gameContainer">
-    <select
-      bind:value={selectedList}
-      on:change={restartGame}
-      class="vocabSelector"
-    >
-      {#each Object.entries(fullVocabList) as list}
-        <option value={list[0]}
-          >{"N5 Set - " + list[0].charAt(list[0].length - 1)}</option
-        >
-      {/each}
-      <option value={"all"}>Todos</option>
-    </select>
+    <div>
+      <select
+        bind:value={selectedList}
+        on:change={restartGame}
+        class="vocabSelector"
+      >
+        {#each Object.entries(fullVocabList) as list}
+          <option value={list[0]}>{"N5 Set - " + list[0]}</option>
+        {/each}
+        <option value={"all"}>Todos</option>
+      </select>
+
+      <select
+        bind:value={numberOfCards}
+        on:change={restartGame}
+        class="vocabSelector"
+      >
+        {#each getNumbersList(vocabList) as amount}
+          <option value={amount}>{amount}</option>
+        {/each}
+        {#if vocabList.length % 5 != 0}
+          <option value={vocabList.length}
+            >{"All (" + vocabList.length + ")"}</option
+          >
+        {/if}
+        <option value={"nonstop"}>Non Stop</option>
+      </select>
+    </div>
 
     <div class="card">
       {#if hiraWords.length == 0}
