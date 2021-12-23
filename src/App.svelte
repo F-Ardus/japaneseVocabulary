@@ -214,6 +214,10 @@
       {:else if showScore}
         <h1>{score + "/" + numberOfCards}</h1>
       {:else}
+        <div class="cardData">
+          <h2>{score}</h2>
+          <h2>{currentCard + 1 + "/" + hiraWords.length}</h2>
+        </div>
         <h1>{hiraWords[currentCard]}</h1>
       {/if}
     </div>
@@ -302,6 +306,17 @@
         justify-content: center;
         box-shadow: 0px 0px 20px 0px #cfcfcf;
         align-items: center;
+        position: relative;
+
+        .cardData {
+          display: flex;
+          position: absolute;
+          justify-content: space-between;
+          top: 0;
+          width: 100%;
+          padding: 0 20px;
+          box-sizing: border-box;
+        }
 
         button {
           height: 100%;
