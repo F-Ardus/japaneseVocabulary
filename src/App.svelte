@@ -226,7 +226,7 @@
       {#if rightAnswer == true}
         <h2 class="correctAnswer">Correcto!</h2>
       {:else if rightAnswer === false}
-        <h2 class="wrongAnswer">Falso!</h2>
+        <h2 class="wrongAnswer">Incorrecto!</h2>
       {/if}
 
       {#if hiraWords.length > 0 && !showScore}
@@ -237,7 +237,7 @@
             on:click={() => {
               showAnswer = true;
               score--;
-            }}>Show Answer</button
+            }}>Revelar</button
           >
           {#if showAnswer}
             <h2>{hiraAnswers[currentCard]}</h2>
@@ -247,7 +247,7 @@
                 showAnswer = false;
                 score++;
                 nextCard();
-              }}>Next</button
+              }}>Siguiente</button
             >
           {/if}
         </div>
@@ -268,6 +268,9 @@
     width: 500px;
     max-height: 100%;
     max-width: 100%;
+    height: 100%;
+    background-color: #ece9e0;
+    box-shadow: 0px 0px 20px 0px #3b393c;
 
     .selectorsWrapper {
       display: flex;
@@ -282,7 +285,7 @@
       }
 
       .vocabSelector {
-        background-color: white;
+        background-color: #fcfbf6;
         width: 150px;
         margin-bottom: 40px;
         border-radius: 5px;
@@ -304,9 +307,11 @@
         border: 1px solid #cfcfcf;
         display: flex;
         justify-content: center;
-        box-shadow: 0px 0px 20px 0px #cfcfcf;
+        box-shadow: 0px 0px 10px 0px #69696c;
+        background-color: #fcfbf6;
         align-items: center;
         position: relative;
+        max-width: 90%;
 
         .cardData {
           display: flex;
@@ -322,7 +327,7 @@
           height: 100%;
           width: 100%;
           border-radius: 20px;
-          background-color: white;
+          background-color: #fcfbf6;
           border: none;
           margin: 0;
 
@@ -337,6 +342,7 @@
         flex-direction: column;
         align-items: center;
         margin-top: 40px;
+        max-width: 100%;
 
         h2 {
           margin: 0;
@@ -348,7 +354,7 @@
           width: 100%;
           align-items: center;
           max-height: 50px;
-          background-color: #e6e6e6;
+          background-color: #fcfbf6;
 
           button {
             margin: 0;
@@ -363,25 +369,25 @@
             }
           }
           .showAnswerButton {
-            background-color: crimson;
+            background-color: #ca424f;
           }
 
           .nextButton {
-            background-color: dodgerblue;
+            background-color: #036273;
           }
         }
       }
       .correctAnswer {
-        color: limegreen;
+        color: #73854a;
       }
       .wrongAnswer {
-        color: crimson;
+        color: #ca424f;
       }
 
       .playAgainButton {
         margin-top: 40px;
         color: white;
-        background-color: limegreen;
+        background-color: #73854a;
         border-radius: 5px;
         border: none;
         font-weight: bold;

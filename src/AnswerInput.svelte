@@ -18,18 +18,23 @@
 <style>
   form {
     margin: 40px 0;
+    display: flex;
+    max-width: 100%;
   }
   input {
     border-radius: 5px;
     padding: 9px;
+    background-color: #fcfbf6;
+    max-width: calc(100% - 70px);
   }
   .submitButton {
-    background-color: dodgerblue;
-    color: white;
+    background-color: #5ac3d9;
+    color: #fcfbf6;
     padding: 10px;
     font-weight: bold;
     border-radius: 5px;
     border: none;
+    width: 70px;
   }
   .submitButton:hover {
     cursor: pointer;
