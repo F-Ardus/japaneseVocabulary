@@ -93,7 +93,6 @@
       indexA = 0;
       indexB = 1;
     }
-    debugger;
     let correspondToAnswer = vocabList.find(
       (i) => i[indexB] === answer.detail.toLowerCase()
     )?.[indexA];
@@ -228,13 +227,26 @@
 
       {#if hiraWords.length > 0 && !showScore}
         <AnswerInput on:checkAnswer={checkAnswer} />
-        <button
-          class="showAnswerButton"
-          on:click={() => {
-            showAnswer = true;
-            score--;
-          }}>Show Answer</button
-        >
+        <div class="showAnswerWrapper">
+          <button
+            class="showAnswerButton"
+            on:click={() => {
+              showAnswer = true;
+              score--;
+            }}>Show Answer</button
+          >
+          {#if showAnswer}
+            <h2>{hiraAnswers[currentCard]}</h2>
+            <button
+              class="nextButton"
+              on:click={() => {
+                showAnswer = false;
+                score++;
+                nextCard();
+              }}>Next</button
+            >
+          {/if}
+        </div>
       {/if}
       {#if showScore}
         <button class="playAgainButton" on:click={restartGame}
@@ -242,17 +254,6 @@
         >
       {/if}
     </div>
-
-    {#if showAnswer}
-      <p>{hiraAnswers[currentCard]}</p>
-      <button
-        on:click={() => {
-          showAnswer = false;
-          score++;
-          nextCard();
-        }}>Next</button
-      >
-    {/if}
   </div>
 </main>
 
@@ -268,6 +269,7 @@
       display: flex;
       justify-content: space-evenly;
       width: 100%;
+      flex-wrap: wrap;
 
       label {
         margin-bottom: 10px;
@@ -319,10 +321,39 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        margin-top: 40px;
 
         h2 {
           margin: 0;
-          margin-top: 40px;
+        }
+
+        .showAnswerWrapper {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          align-items: center;
+          max-height: 50px;
+          background-color: #e6e6e6;
+
+          button {
+            margin: 0;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            border: none;
+            padding: 10px;
+
+            &:hover {
+              cursor: pointer;
+            }
+          }
+          .showAnswerButton {
+            background-color: crimson;
+          }
+
+          .nextButton {
+            background-color: dodgerblue;
+          }
         }
       }
       .correctAnswer {
@@ -331,18 +362,7 @@
       .wrongAnswer {
         color: crimson;
       }
-      .showAnswerButton {
-        color: white;
-        background-color: crimson;
-        border-radius: 5px;
-        border: none;
-        font-weight: bold;
-        padding: 10px;
 
-        &:hover {
-          cursor: pointer;
-        }
-      }
       .playAgainButton {
         margin-top: 40px;
         color: white;
