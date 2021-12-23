@@ -1,8 +1,6 @@
 <script>
-  import { debug } from "svelte/internal";
-
-  import AnswerInput from "./AnswerInput.svelte";
-
+  import AnswerInput from "./components/AnswerInput.svelte";
+  import NavBar from "./components/NavBar.svelte";
   import * as vocab from "./N5-Vocab.json";
 
   //FUNCTIONS
@@ -155,114 +153,123 @@
 </script>
 
 <main>
-  <div class="gameContainer">
-    <div class="selectorsWrapper">
-      <div class="selectorContainer">
-        <label for="vocabListSelec">Set de tarjetas:</label>
-        <select
-          id="vocabListSelec"
-          bind:value={selectedList}
-          on:change={restartGame}
-          class="vocabSelector"
-        >
-          {#each Object.entries(fullVocabList) as list}
-            <option value={list[0]}>{"N5 Set - " + list[0]}</option>
-          {/each}
-          <option value={"all"}>Todos</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="numCardSelec">Numero de tarjetas:</label>
-        <select
-          id="numCardSelec"
-          bind:value={numberOfCards}
-          on:change={restartGame}
-          class="vocabSelector"
-        >
-          {#each getNumbersList(vocabList) as amount}
-            <option value={amount}>{amount}</option>
-          {/each}
-          {#if vocabList.length % 5 != 0}
-            <option value={vocabList.length}
-              >{"All (" + vocabList.length + ")"}</option
-            >
-          {/if}
-          <option value={"nonstop"}>Non Stop</option>
-        </select>
-      </div>
-      <div>
-        <label for="gameTypeSelec">Tipo de juego:</label>
-        <select
-          id="nameTypeSelec"
-          bind:value={gameType}
-          on:change={restartGame}
-          class="vocabSelector"
-        >
-          <option value={"showLang"}>Español</option>
-          <option value={"showHira"}>Japones</option>
-          <option value={"showShuffle"}>Shuffle</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="card">
-      {#if hiraWords.length == 0}
-        <button on:click={restartGame}>
-          <h1>Comenzar!</h1>
-        </button>
-      {:else if showScore}
-        <h1>{score + "/" + numberOfCards}</h1>
-      {:else}
-        <div class="cardData">
-          <h2>{score}</h2>
-          <h2>{currentCard + 1 + "/" + hiraWords.length}</h2>
-        </div>
-        <h1>{hiraWords[currentCard]}</h1>
-      {/if}
-    </div>
-
-    <div class="answerSection">
-      {#if rightAnswer == true}
-        <h2 class="correctAnswer">Correcto!</h2>
-      {:else if rightAnswer === false}
-        <h2 class="wrongAnswer">Incorrecto!</h2>
-      {/if}
-
-      {#if hiraWords.length > 0 && !showScore}
-        <AnswerInput on:checkAnswer={checkAnswer} />
-        <div class="showAnswerWrapper">
-          <button
-            class="showAnswerButton"
-            on:click={() => {
-              showAnswer = true;
-              score--;
-            }}>Revelar</button
+  <NavBar />
+  <div class="cardGameWrapper">
+    <div class="gameContainer">
+      <div class="selectorsWrapper">
+        <div class="selectorContainer">
+          <label for="vocabListSelec">Set de tarjetas:</label>
+          <select
+            id="vocabListSelec"
+            bind:value={selectedList}
+            on:change={restartGame}
+            class="vocabSelector"
           >
-          {#if showAnswer}
-            <h2>{hiraAnswers[currentCard]}</h2>
-            <button
-              class="nextButton"
-              on:click={() => {
-                showAnswer = false;
-                score++;
-                nextCard();
-              }}>Siguiente</button
-            >
-          {/if}
+            {#each Object.entries(fullVocabList) as list}
+              <option value={list[0]}>{"N5 Set - " + list[0]}</option>
+            {/each}
+            <option value={"all"}>Todos</option>
+          </select>
         </div>
-      {/if}
-      {#if showScore}
-        <button class="playAgainButton" on:click={restartGame}
-          >Play Again</button
-        >
-      {/if}
+
+        <div>
+          <label for="numCardSelec">Numero de tarjetas:</label>
+          <select
+            id="numCardSelec"
+            bind:value={numberOfCards}
+            on:change={restartGame}
+            class="vocabSelector"
+          >
+            {#each getNumbersList(vocabList) as amount}
+              <option value={amount}>{amount}</option>
+            {/each}
+            {#if vocabList.length % 5 != 0}
+              <option value={vocabList.length}
+                >{"All (" + vocabList.length + ")"}</option
+              >
+            {/if}
+            <option value={"nonstop"}>Non Stop</option>
+          </select>
+        </div>
+        <div>
+          <label for="gameTypeSelec">Tipo de juego:</label>
+          <select
+            id="nameTypeSelec"
+            bind:value={gameType}
+            on:change={restartGame}
+            class="vocabSelector"
+          >
+            <option value={"showLang"}>Español</option>
+            <option value={"showHira"}>Japones</option>
+            <option value={"showShuffle"}>Shuffle</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        {#if hiraWords.length == 0}
+          <button on:click={restartGame}>
+            <h1>Comenzar!</h1>
+          </button>
+        {:else if showScore}
+          <h1>{score + "/" + numberOfCards}</h1>
+        {:else}
+          <div class="cardData">
+            <h2>{score}</h2>
+            <h2>{currentCard + 1 + "/" + hiraWords.length}</h2>
+          </div>
+          <h1>{hiraWords[currentCard]}</h1>
+        {/if}
+      </div>
+
+      <div class="answerSection">
+        {#if rightAnswer == true}
+          <h2 class="correctAnswer">Correcto!</h2>
+        {:else if rightAnswer === false}
+          <h2 class="wrongAnswer">Incorrecto!</h2>
+        {/if}
+
+        {#if hiraWords.length > 0 && !showScore}
+          <AnswerInput on:checkAnswer={checkAnswer} />
+          <div class="showAnswerWrapper">
+            <button
+              class="showAnswerButton"
+              on:click={() => {
+                showAnswer = true;
+                score--;
+              }}>Revelar</button
+            >
+            {#if showAnswer}
+              <h2>{hiraAnswers[currentCard]}</h2>
+              <button
+                class="nextButton"
+                on:click={() => {
+                  showAnswer = false;
+                  score++;
+                  nextCard();
+                }}>Siguiente</button
+              >
+            {/if}
+          </div>
+        {/if}
+        {#if showScore}
+          <button class="playAgainButton" on:click={restartGame}
+            >Play Again</button
+          >
+        {/if}
+      </div>
     </div>
   </div>
 </main>
 
 <style lang="scss">
   main {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+  .cardGameWrapper {
     margin: 0;
     padding: 0;
     width: 500px;
@@ -277,6 +284,7 @@
       justify-content: space-evenly;
       width: 100%;
       flex-wrap: wrap;
+      margin-top: 115px;
 
       label {
         margin-bottom: 10px;
@@ -297,7 +305,7 @@
       height: 100%;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
 
       .card {
@@ -321,6 +329,10 @@
           width: 100%;
           padding: 0 20px;
           box-sizing: border-box;
+        }
+
+        h1 {
+          text-align: center;
         }
 
         button {

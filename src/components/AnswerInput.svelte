@@ -15,7 +15,7 @@
   <button class="submitButton">Submit</button>
 </form>
 
-<style>
+<style lang="scss">
   form {
     margin: 40px 0;
     display: flex;
@@ -35,8 +35,9 @@
     border-radius: 5px;
     border: none;
     width: 70px;
-  }
-  .submitButton:hover {
-    cursor: pointer;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 </style>
